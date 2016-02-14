@@ -2,9 +2,11 @@
 package org.usfirst.frc.team1018.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.Victor;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,6 +21,15 @@ public class Robot extends IterativeRobot {
 //    String autoSelected;
 //    SendableChooser chooser;
 	
+	RobotDrive myRobot;
+	Joystick rightStick,
+		leftStick;
+	SpeedController leftMotorOne,
+			leftMotorTwo,
+			rightMotorOne,
+			rightMotorTwo;
+	int autoLoopCounter;
+	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -28,6 +39,24 @@ public class Robot extends IterativeRobot {
 //        chooser.addDefault("Default Auto", defaultAuto);
 //        chooser.addObject("My Auto", customAuto);
 //        SmartDashboard.putData("Auto choices", chooser);
+    	
+    	// Initialize the motors
+    	leftMotorOne = new Jaguar(1);
+		leftMotorTwo = new Jaguar(3);
+		rightMotorOne = new Victor(0);
+		rightMotorTwo = new Victor(2);
+    	
+    	// Invert the motors
+    	leftMotorOne.setInverted(true);
+    	leftMotorTwo.setInverted(true);
+    	rightMotorOne.setInverted(true);
+    	rightMotorTwo.setInverted(true);
+    	
+    	
+    	myRobot = new RobotDrive(leftMotorOne,leftMotorTwo,rightMotorOne,rightMotorTwo);
+    	
+    	rightStick = new Joystick(1);
+    	leftStick = new Joystick(0);
     }
     
 	/**
@@ -40,15 +69,20 @@ public class Robot extends IterativeRobot {
 	 * If using the SendableChooser make sure to add them to the chooser code above as well.
 	 */
     public void autonomousInit() {
+//    	Provided Code
 //    	autoSelected = (String) chooser.getSelected();
 //		autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto); // Keep this line commented
 //		System.out.println("Auto selected: " + autoSelected);
+    	
+//    	Old code
+    	autoLoopCounter = 0;
     }
 
     /**
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+//    	Provided Code
 //    	switch(autoSelected) {
 //    	case customAuto:
 //        //Put custom auto code here   
@@ -58,13 +92,29 @@ public class Robot extends IterativeRobot {
 //    	//Put default auto code here
 //            break;
 //    	}
+    	
+//    	Old code that has worked before
+    	if(autoLoopCounter < 100) //Check if we've completed 100 loops (approximately 2 seconds)
+		{
+			myRobot.drive(-0.5, 0.0); 	// drive forwards half speed
+			autoLoopCounter++;
+			} else {
+			myRobot.drive(0.0, 0.0); 	// stop robot
+		}
+    }
+    
+    /**
+     * This function is called once each time the robot enters tele-operated mode
+     */
+    public void teleopInit(){
     }
 
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        
+    	// Tank Drive
+    	myRobot.tankDrive(leftStick, rightStick);
     }
     
     /**
